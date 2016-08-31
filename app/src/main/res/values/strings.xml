@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">My First Mapbox App</string>
+    <string name="access_token">sk.eyJ1IjoiZnV0enVsdXJ1Y3UiLCJhIjoiY2lzZ2h2OWJoMDF3ODNubnZtdWQ4c2xpMSJ9.ygpkdRlrk55kp-4ps55loQ</string>
+    <string name="style_mapbox_dark">mapbox://styles/mapbox/dark-v9</string>
+</resources>
