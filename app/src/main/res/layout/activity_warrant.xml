@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.ga.roosevelt.mapboxapp.WarrantActivity"
+    android:background="#cccccc">
+
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/crdLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        app:cardUseCompatPadding="true"
+        app:contentPadding="10dp"
+        app:cardElevation="-5dp"
+        app:cardCornerRadius="5dp"
+        app:cardBackgroundColor="@color/cardview_dark_background">
+        <TextView
+            android:id="@+id/lblCrimeComputer"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:textSize="30sp"
+            android:text="Crime Computer"
+            android:textColor="@color/colorText" />
+    </android.support.v7.widget.CardView>
+
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/crdSex"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        app:cardUseCompatPadding="true"
+        app:contentPadding="10dp"
+        app:cardElevation="-5dp"
+        app:cardCornerRadius="5dp"
+        app:cardBackgroundColor="@color/cardview_dark_background"
+        android:layout_below="@id/crdLabel">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="3">
+            <TextView
+                android:id="@+id/lblSex"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Sex:"
+                android:layout_weight="1"
+                android:textColor="@color/colorText" />
+            <Spinner
+                android:id="@+id/spnSex"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:textColor="@color/abc_secondary_text_material_dark" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/crdHobby"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        app:cardUseCompatPadding="true"
+        app:contentPadding="10dp"
+        app:cardElevation="-5dp"
+        app:cardCornerRadius="5dp"
+        app:cardBackgroundColor="@color/cardview_dark_background"
+        android:layout_below="@id/crdSex">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="3">
+            <TextView
+                android:id="@+id/lblHobby"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Hobby:"
+                android:layout_weight="1"
+                android:textColor="@color/colorText" />
+            <Spinner
+                android:id="@+id/spnHobby"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:textColor="@color/colorText" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/crdHair"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        app:cardUseCompatPadding="true"
+        app:contentPadding="10dp"
+        app:cardElevation="-5dp"
+        app:cardCornerRadius="5dp"
+        app:cardBackgroundColor="@color/cardview_dark_background"
+        android:layout_below="@id/crdHobby">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="3">
+            <TextView
+                android:id="@+id/lblHair"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Hair:"
+                android:layout_weight="1"
+                android:textColor="@color/colorText" />
+            <Spinner
+                android:id="@+id/spnHair"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:textColor="@color/colorText" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/crdFeature"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        app:cardUseCompatPadding="true"
+        app:contentPadding="10dp"
+        app:cardElevation="-5dp"
+        app:cardCornerRadius="5dp"
+        app:cardBackgroundColor="@color/cardview_dark_background"
+        android:layout_below="@id/crdHair">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="3">
+            <TextView
+                android:id="@+id/lblFeature"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Feature:"
+                android:layout_weight="1"
+                android:textColor="@color/colorText" />
+            <Spinner
+                android:id="@+id/spnFeature"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:textColor="@color/colorText" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/crdAuto"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        app:cardUseCompatPadding="true"
+        app:contentPadding="10dp"
+        app:cardElevation="-5dp"
+        app:cardCornerRadius="5dp"
+        app:cardBackgroundColor="@color/cardview_dark_background"
+        android:layout_below="@id/crdFeature">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="3">
+            <TextView
+                android:id="@+id/lblAuto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Auto:"
+                android:layout_weight="1"
+                android:textColor="@color/colorText" />
+            <Spinner
+                android:id="@+id/spnAuto"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:textColor="@color/colorText"
+                />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/crdResults"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        app:cardUseCompatPadding="true"
+        app:contentPadding="10dp"
+        app:cardElevation="-5dp"
+        app:cardCornerRadius="5dp"
+        app:cardBackgroundColor="@color/cardview_dark_background"
+        android:layout_below="@id/crdAuto">
+
+        <!--TODO Textview typewriter
+        -->
+        <com.ga.roosevelt.mapboxapp.custom_views.TypewriterView
+            android:id="@+id/txtResults"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorText"/>
+    </android.support.v7.widget.CardView>
+
+    <Button
+        android:id="@+id/btnCompute"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/cardview_dark_background"
+        android:text="Compute"
+        android:textColor="@color/colorText"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
+
+
+    <!--TODO consider using LinearLayout, think about where to put back button -->
+</RelativeLayout>

@@ -31,6 +31,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textColor="#DC143C"/>
+
     </android.support.v7.widget.CardView>
 
 
@@ -48,7 +49,8 @@
             android:textSize="20sp"
             android:textColor="@android:color/white"
             android:gravity="center"
-            android:layout_margin="5dp"/>
+            android:layout_margin="5dp"
+            android:id="@+id/lblNeighborhoods" />
         <ListView
             android:id="@+id/lstNeighborhoods"
             android:layout_marginTop="35dp"
