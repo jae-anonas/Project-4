@@ -21,7 +21,7 @@
         app:contentPadding="10dp"
         app:cardElevation="-5dp"
         app:cardCornerRadius="5dp"
-        app:cardBackgroundColor="@color/cardview_dark_background">
+        app:cardBackgroundColor="#000">
         <TextView
             android:id="@+id/lblCrimeComputer"
             android:layout_width="wrap_content"
@@ -213,7 +213,10 @@
             android:id="@+id/txtResults"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorText"/>
+            android:textColor="@color/colorText"
+            android:focusable="false"
+            android:cursorVisible="false"
+            />
     </android.support.v7.widget.CardView>
 
     <Button

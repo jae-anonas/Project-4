@@ -17,14 +17,22 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
             </intent-filter>
         </activity>
 
         <service android:name="com.mapbox.mapboxsdk.telemetry.TelemetryService" />
         <service android:name=".services.GPSService" />
 
-        <activity android:name=".WarrantActivity"></activity>
+        <activity android:name=".WarrantActivity" />
+        <activity android:name=".MainMenuActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".MissionStartActivity"></activity>
     </application>
 
 </manifest>

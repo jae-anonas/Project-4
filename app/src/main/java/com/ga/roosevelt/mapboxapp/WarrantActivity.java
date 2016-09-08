@@ -15,6 +15,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.ga.roosevelt.mapboxapp.adapters.DossierSpinnerAdapter;
+import com.ga.roosevelt.mapboxapp.constants.CustomFonts;
 import com.ga.roosevelt.mapboxapp.custom_views.TypewriterView;
 import com.ga.roosevelt.mapboxapp.database.ThiefDatabaseHelper;
 import com.ga.roosevelt.mapboxapp.models.Thief;
@@ -71,10 +72,7 @@ public class WarrantActivity extends AppCompatActivity implements View.OnClickLi
         mBtnCompute = (Button) findViewById(R.id.btnCompute);
         mBtnCompute.setOnClickListener(this);
 
-        AssetManager am = this.getAssets();
-
-        Typeface typeface = Typeface.createFromAsset(am,
-                String.format(Locale.US, "fonts/%s", "PressStart2P.ttf"));
+        Typeface typeface = CustomFonts.getInstance(this).getBasicFont();
         lblCrimeComputer.setTypeface(typeface);
         lblHair.setTypeface(typeface);
         lblHobby.setTypeface(typeface);
@@ -144,7 +142,7 @@ public class WarrantActivity extends AppCompatActivity implements View.OnClickLi
             }
         } else {
             txtResults.pause(1500)
-                    .type("There is no one that matches those descriptions.");
+                    .type("There is no one that matches that description.");
         }
 
         //TODO if there is only one search result, create a SharedPreference to store the name as a Warrant

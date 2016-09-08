@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -23,13 +25,16 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ga.roosevelt.mapboxapp.adapters.NeighborhoodListBaseAdapter;
 import com.ga.roosevelt.mapboxapp.constants.APIConstants;
+import com.ga.roosevelt.mapboxapp.constants.CustomFonts;
 import com.ga.roosevelt.mapboxapp.models.Neighborhoods;
 import com.ga.roosevelt.mapboxapp.services.GPSService;
 import com.google.gson.Gson;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.annotations.Polygon;
 import com.mapbox.mapboxsdk.annotations.PolygonOptions;
@@ -66,12 +71,12 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
     private BroadcastReceiver mBroadcastReceiver;
 
     MapView mMap;
-    TextView mLblNeighborhoodName, mLblNeighborhood;
+    TextView mLblNeighborhoodName, mLblNeighborhood, mLblPlaceName;
     ListView mLstNeighborhoods;
     PolygonOptions currentNeighborhoodPolygon;
     MapboxMap mMapboxMap;
 
-    MarkerViewOptions currentPosMarker, resultMarker1;
+    MarkerViewOptions currentPosMarker, resultMarker1, resultMarker2, resultMarker3;
 
     YelpAPI yelpAPI;
 
@@ -95,10 +100,6 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
         mMap.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(final MapboxMap mapboxMap) {
-                final LatLng target = new LatLng(40.752835, -73.981422);
-//                MarkerViewOptions marker = new MarkerViewOptions()
-//                        .position(target);
-//                mapboxMap.addMarker(marker);
                 mMapboxMap = mapboxMap;
 
                 CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -160,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
         mLblNeighborhoodName = (TextView) findViewById(R.id.lblNeighborhoodName);
         mLstNeighborhoods = (ListView) findViewById(R.id.lstNeighborhoods);
         mLblNeighborhood = (TextView) findViewById(R.id.lblNeighborhoods);
+        mLblPlaceName = (TextView) findViewById(R.id.lblPlaceName);
 
         mLblNeighborhood.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,48 +171,19 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
             }
         });
 
+        Typeface typeface = CustomFonts.getInstance(this).getBasicFont();
+        mLblPlaceName.setTypeface(typeface);
+        mLblNeighborhood.setTypeface(typeface);
+
         mMap = (MapView) findViewById(R.id.mapBox);
 
-        mLblNeighborhoodName.setOnClickListener(new View.OnClickListener() {
+        mLblPlaceName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (currentPosMarker != null) {
-                    Map<String, String> params = new HashMap<>();
+                    //make call to yelp
+                    getYelpData();
 
-                    params.put("term", "Mexican+food");
-                    params.put("limit", "3");
-                    params.put("sort", "1");
-
-                    CoordinateOptions coordinate = CoordinateOptions.builder()
-                            .latitude(currentPosMarker.getPosition().getLatitude())
-                            .longitude(currentPosMarker.getPosition().getLongitude()).build();
-
-                    Call<SearchResponse> call = yelpAPI.search(coordinate, params);
-                    Callback<SearchResponse> callback = new Callback<SearchResponse>() {
-                        @Override
-                        public void onResponse(Call<SearchResponse> call, retrofit2.Response<SearchResponse> response) {
-                            SearchResponse searchResponse = response.body();
-                            Business firstBusiness =  searchResponse.businesses().get(0);
-                            Log.d(TAG, "onResponse: total: " + firstBusiness.distance());
-
-                            //TODO display marker
-
-                            LatLng target = new LatLng(firstBusiness.location().coordinate().latitude(),
-                                    firstBusiness.location().coordinate().longitude());
-
-                            resultMarker1 = new MarkerViewOptions()
-                                    .position(target);
-                            mMapboxMap.addMarker(resultMarker1);
-
-                        }
-
-                        @Override
-                        public void onFailure(Call<SearchResponse> call, Throwable t) {
-
-                        }
-                    };
-
-                    call.enqueue(callback);
 
                 }
             }
@@ -354,4 +327,81 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
     }
 
 
+    public void getYelpData() {
+        Map<String, String> params = new HashMap<>();
+
+        params.put("term", "Mexican+food");
+        params.put("limit", "3");
+        params.put("sort", "1");
+
+        CoordinateOptions coordinate = CoordinateOptions.builder()
+                .latitude(currentPosMarker.getPosition().getLatitude())
+                .longitude(currentPosMarker.getPosition().getLongitude()).build();
+
+        Call<SearchResponse> call = yelpAPI.search(coordinate, params);
+        Callback<SearchResponse> callback = new Callback<SearchResponse>() {
+            @Override
+            public void onResponse(Call<SearchResponse> call, retrofit2.Response<SearchResponse> response) {
+                SearchResponse searchResponse = response.body();
+                Business firstBusiness =  searchResponse.businesses().get(0);
+                Business secondBusiness = searchResponse.businesses().get(1);
+                Business thirdBusiness = searchResponse.businesses().get(2);
+
+                //TODO Store these businesses! Check first if they're already stored. (i.e. by place id)
+                //TODO WHY CHECK??
+
+                Log.d(TAG, "onResponse: distance, 1st business: " + firstBusiness.distance());
+                Log.d(TAG, "onResponse: name: " + firstBusiness.name());
+
+                //TODO display marker
+
+                LatLng target1 = new LatLng(firstBusiness.location().coordinate().latitude(),
+                        firstBusiness.location().coordinate().longitude());
+                LatLng target2 = new LatLng(secondBusiness.location().coordinate().latitude(),
+                        secondBusiness.location().coordinate().longitude());
+                LatLng target3 = new LatLng(thirdBusiness.location().coordinate().latitude(),
+                        thirdBusiness.location().coordinate().longitude());
+
+                resultMarker1 = new MarkerViewOptions()
+                        .position(target1)
+                        .snippet(firstBusiness.snippetText())
+                        .title(firstBusiness.name());
+                resultMarker2 = new MarkerViewOptions()
+                        .position(target2)
+                        .snippet(secondBusiness.snippetText())
+                        .title(secondBusiness.name());
+                resultMarker3 = new MarkerViewOptions()
+                        .position(target3)
+                        .snippet(thirdBusiness.snippetText())
+                        .title(thirdBusiness.name());
+
+
+                mMapboxMap.addMarker(resultMarker1);
+                mMapboxMap.addMarker(resultMarker2);
+                mMapboxMap.addMarker(resultMarker3);
+
+                mMapboxMap.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(@NonNull Marker marker) {
+
+                        mLblPlaceName.setText(marker.getTitle());
+                        Toast.makeText(MainActivity.this, marker.getSnippet(), Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                });
+
+                //TODO zoom out to show all in MapBox screen
+
+
+            }
+
+            @Override
+            public void onFailure(Call<SearchResponse> call, Throwable t) {
+
+            }
+        };
+
+        call.enqueue(callback);
+
+    }
 }
