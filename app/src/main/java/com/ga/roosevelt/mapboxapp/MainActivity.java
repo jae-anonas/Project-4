@@ -30,11 +30,17 @@ import android.widget.Toast;
 import com.ga.roosevelt.mapboxapp.adapters.NeighborhoodListBaseAdapter;
 import com.ga.roosevelt.mapboxapp.constants.APIConstants;
 import com.ga.roosevelt.mapboxapp.constants.CustomFonts;
+import com.ga.roosevelt.mapboxapp.custom_views.CustomTextview;
+import com.ga.roosevelt.mapboxapp.custom_views.MenuButton;
+import com.ga.roosevelt.mapboxapp.database.ThiefDatabaseHelper;
+import com.ga.roosevelt.mapboxapp.game_logic.Mission;
+import com.ga.roosevelt.mapboxapp.game_logic.MissionBusiness;
 import com.ga.roosevelt.mapboxapp.models.Neighborhoods;
 import com.ga.roosevelt.mapboxapp.services.GPSService;
 import com.google.gson.Gson;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.annotations.Polygon;
 import com.mapbox.mapboxsdk.annotations.PolygonOptions;
@@ -63,7 +69,7 @@ import okhttp3.Response;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-public class MainActivity extends AppCompatActivity implements NeighborhoodListBaseAdapter.OnNeighborhoodChosenListener {
+public class MainActivity extends AppCompatActivity implements NeighborhoodListBaseAdapter.OnNeighborhoodChosenListener, View.OnClickListener {
 
     private static final String TAG = "iiiiiii";
     private static final int LOCATION_PERMISSION_CODE = 123;
@@ -72,13 +78,23 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
 
     MapView mMap;
     TextView mLblNeighborhoodName, mLblNeighborhood, mLblPlaceName;
+    MenuButton mBtnWarrant, mBtnInvestigate; //TODO mBtnInvestigate will be clickable if near!!
     ListView mLstNeighborhoods;
     PolygonOptions currentNeighborhoodPolygon;
     MapboxMap mMapboxMap;
+    CustomTextview mDistanceToNearest, mNearestPlace;
 
     MarkerViewOptions currentPosMarker, resultMarker1, resultMarker2, resultMarker3;
 
     YelpAPI yelpAPI;
+
+    ThiefDatabaseHelper dbHelper;
+
+    long mission_id;
+    Mission currentMission;
+    List<MissionBusiness> businesses;
+    List<MarkerViewOptions> businessMarkers;
+    MissionBusiness nearestMissionBusiness;
 
 
     @Override
@@ -90,6 +106,12 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+
+        dbHelper = ThiefDatabaseHelper.getInstance(this);
+        mission_id = getIntent().getLongExtra("mission_id", 0);
+
+        currentMission = dbHelper.getMissionById(mission_id);
+        businesses = dbHelper.getPlacesInCurrentMissionAsList();
 
         initializeYelpAPI();
         initializeViews();
@@ -106,38 +128,38 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
                         .target(new LatLng(40.752835, -73.981422))  // Sets the center of the map to the NYPL at 42nd, Bryant Park
                         .bearing(30)                                // 270 - Sets the orientation of the camera to look west
                         .tilt(30)                                   // Sets the tilt of the camera to 30 degrees
-                        .zoom(13)
+                        .zoom(5)
                         .build();
 
                 mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 4000);
 
-                Gson gson = new Gson();
-
-                InputStream raw =  getResources().openRawResource(R.raw.neighborhoodsgeojson);
-                Reader rd = new BufferedReader(new InputStreamReader(raw));
-                final Neighborhoods neighborhoods = gson.fromJson(rd, Neighborhoods.class);
-
-                NeighborhoodListBaseAdapter baseAdapter = new
-                        NeighborhoodListBaseAdapter(neighborhoods.getFeatures(),
-                        MainActivity.this, MainActivity.this);
-                mLstNeighborhoods.setAdapter(baseAdapter);
-
-                Neighborhoods.Feature neighborhood = neighborhoods.getFeatures().get(21); //Midtown, Manhattan
-
-                mLblNeighborhoodName.setText(neighborhood.getProperties().getNeighborhood());
+//                Gson gson = new Gson();
 //
-//                List<LatLng> polygon = new ArrayList<>();
+//                InputStream raw =  getResources().openRawResource(R.raw.neighborhoodsgeojson);
+//                Reader rd = new BufferedReader(new InputStreamReader(raw));
+//                final Neighborhoods neighborhoods = gson.fromJson(rd, Neighborhoods.class);
 //
-//                for (List<Double> coordinates : neighborhood.getGeometry().getCoordinates().get(0)) {
-//                    polygon.add(new LatLng(coordinates.get(1), coordinates.get(0)));
-//                }
+//                NeighborhoodListBaseAdapter baseAdapter = new
+//                        NeighborhoodListBaseAdapter(neighborhoods.getFeatures(),
+//                        MainActivity.this, MainActivity.this);
+//                mLstNeighborhoods.setAdapter(baseAdapter);
 //
-//                currentNeighborhoodPolygon = new PolygonOptions()
-//                        .addAll(polygon)
-//                        .fillColor(Color.argb(20, 220, 20, 60));
+//                Neighborhoods.Feature neighborhood = neighborhoods.getFeatures().get(21); //Midtown, Manhattan
 //
-//                mapboxMap.addPolygon(currentNeighborhoodPolygon);
-                addNeighborhoodPolygon(neighborhood.getGeometry().getCoordinates().get(0));
+//                mLblNeighborhoodName.setText(neighborhood.getProperties().getNeighborhood());
+////
+////                List<LatLng> polygon = new ArrayList<>();
+////
+////                for (List<Double> coordinates : neighborhood.getGeometry().getCoordinates().get(0)) {
+////                    polygon.add(new LatLng(coordinates.get(1), coordinates.get(0)));
+////                }
+////
+////                currentNeighborhoodPolygon = new PolygonOptions()
+////                        .addAll(polygon)
+////                        .fillColor(Color.argb(20, 220, 20, 60));
+////
+////                mapboxMap.addPolygon(currentNeighborhoodPolygon);
+//                addNeighborhoodPolygon(neighborhood.getGeometry().getCoordinates().get(0));
             }
         });
 
@@ -163,6 +185,12 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
         mLblNeighborhood = (TextView) findViewById(R.id.lblNeighborhoods);
         mLblPlaceName = (TextView) findViewById(R.id.lblPlaceName);
 
+        mBtnWarrant = (MenuButton) findViewById(R.id.btnWarrant);
+        mBtnInvestigate = (MenuButton) findViewById(R.id.btnInvestigate);
+
+        mDistanceToNearest = (CustomTextview) findViewById(R.id.txtDistanceToNearest);
+        mNearestPlace = (CustomTextview) findViewById(R.id.txtNearestPlace);
+
         mLblNeighborhood.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -177,20 +205,10 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
 
         mMap = (MapView) findViewById(R.id.mapBox);
 
-        mLblPlaceName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (currentPosMarker != null) {
-                    //make call to yelp
-                    getYelpData();
-
-
-                }
-            }
-        });
+        mLblPlaceName.setOnClickListener(this);
+        mBtnWarrant.setOnClickListener(this);
+        mBtnInvestigate.setOnClickListener(this);
     }
-
-
 
     @Override
     public void onResume() {
@@ -206,16 +224,78 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
                     Location myLoc = new Location("provider");
                     myLoc.setLatitude(lat);
                     myLoc.setLongitude(lng);
+                    LatLng myLatLng = new LatLng(lat, lng);
 
                     Log.d(TAG, "onReceive: lat: " + myLoc.getLatitude() + " lng: " + myLoc.getLongitude());
 
-                    updateLocationMarker(myLoc);
+//                    updateLocationMarker(myLoc);
+                    MissionBusiness nearestOne = null;
+                    Double nearestDistance = 0.0;
+
+                    businessMarkers = new ArrayList<>();
+                    //TODO add markers, one by one, check if each one is not null
+                    if(businessMarkers.size() == 0){
+                        for (MissionBusiness place : businesses) {
+
+                            MarkerViewOptions markerOptions = new MarkerViewOptions()
+                                    .position(place.getLocation())
+                                    .snippet(place.getSnippet())
+                                    .title(place.getName());
+                            businessMarkers.add(markerOptions);
+
+                            if (mMapboxMap != null) {
+                                mMapboxMap.addMarker(markerOptions);
+                                Log.d(TAG, "onReceive: added marker " + markerOptions.getTitle());
+                            }
+                        }
+                    }
+
+                    //
+
+                    for (MissionBusiness place : businesses) {
+                        if (nearestOne == null) {
+                            nearestOne = place;
+                        }
+                        LatLng placeLatLng = new LatLng(place.getLocation().getLatitude(), place.getLocation().getLongitude());
+                        LatLng nearestPlaceLatLng = new LatLng(nearestOne.getLocation().getLatitude(), nearestOne.getLocation().getLongitude());
+
+                        Double distance = myLatLng.distanceTo(placeLatLng);
+                        Double distance2 = myLatLng.distanceTo(nearestPlaceLatLng);
+
+                        if(distance < distance2){
+                            nearestOne = place;
+                        }
+
+                        nearestMissionBusiness = nearestOne;
+
+                        LatLng nearest = nearestOne.getLocation();
+                        Log.d(TAG, "onReceive: nearest place: " + nearestOne.getName());
+
+                        nearestDistance = myLatLng.distanceTo(nearest);
+
+                    }
+
+                    //display in textview
+                    mDistanceToNearest.setText("Distance to nearest: " + nearestDistance);
+
+                    //TODO if nearestDistance is < 50 then activate Investigate feature
+                    if (nearestDistance <= 50.0) {
+                        Toast.makeText(MainActivity.this, "CLOSE ENOUGH!" + nearestOne.getName(), Toast.LENGTH_SHORT).show();
+                        //TODO open Investigation activity or activate button
+                        mNearestPlace.setText(nearestOne.getName());
+                        mBtnInvestigate.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        mBtnInvestigate.setVisibility(View.INVISIBLE);
+                    }
+
+                    //TODO run through LatLng of 4 possible places
+                    //TODO set up Notifications,
                 }
             };
         }
 
         registerReceiver(mBroadcastReceiver, new IntentFilter("location_update"));
-
     }
 
     @Override
@@ -249,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
     public void onClick(Neighborhoods.Feature neighborhood) {
         //TODO change neighborhood
         mLblNeighborhoodName.setText(neighborhood.getProperties().getNeighborhood());
-        addNeighborhoodPolygon(neighborhood.getGeometry().getCoordinates().get(0));
+//        addNeighborhoodPolygon(neighborhood.getGeometry().getCoordinates().get(0));
     }
 
     public void addNeighborhoodPolygon(List<List<Double>> coordinateList){
@@ -304,6 +384,7 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
             Log.d(TAG, "runtimePermissions: inside if!");
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION_CODE);
+
             return true;
         }
 
@@ -328,6 +409,7 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
 
 
     public void getYelpData() {
+        Log.d(TAG, "getYelpData: ");
         Map<String, String> params = new HashMap<>();
 
         params.put("term", "Mexican+food");
@@ -339,6 +421,7 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
                 .longitude(currentPosMarker.getPosition().getLongitude()).build();
 
         Call<SearchResponse> call = yelpAPI.search(coordinate, params);
+
         Callback<SearchResponse> callback = new Callback<SearchResponse>() {
             @Override
             public void onResponse(Call<SearchResponse> call, retrofit2.Response<SearchResponse> response) {
@@ -403,5 +486,30 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
 
         call.enqueue(callback);
 
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+
+        switch(id){
+            case R.id.lblPlaceName:
+                if(currentPosMarker != null)
+//                    getYelpData();
+                break;
+            case R.id.btnWarrant:
+                Intent i = new Intent(MainActivity.this, WarrantActivity.class);
+                startActivity(i);
+                break;
+            case R.id.btnInvestigate:
+                if (nearestMissionBusiness != null) {
+                    Intent in = new Intent(MainActivity.this, InvestigateActivity.class);
+                    in.putExtra("place_id", nearestMissionBusiness.getPlaceId());
+                    in.putExtra("mission_id", mission_id);
+                    startActivity(in);
+                }
+            default:
+                break;
+        }
     }
 }

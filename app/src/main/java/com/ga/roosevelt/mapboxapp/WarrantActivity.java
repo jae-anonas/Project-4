@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import com.ga.roosevelt.mapboxapp.adapters.DossierSpinnerAdapter;
 import com.ga.roosevelt.mapboxapp.constants.CustomFonts;
+import com.ga.roosevelt.mapboxapp.custom_views.MenuButton;
 import com.ga.roosevelt.mapboxapp.custom_views.TypewriterView;
 import com.ga.roosevelt.mapboxapp.database.ThiefDatabaseHelper;
 import com.ga.roosevelt.mapboxapp.models.Thief;
@@ -24,12 +26,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class WarrantActivity extends AppCompatActivity implements View.OnClickListener {
+public class WarrantActivity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
     private static final String TAG = "iiiiiiii";
 
     TextView lblCrimeComputer, lblSex, lblHair, lblFeature, lblHobby, lblAuto;
     TypewriterView txtResults;
-    Button mBtnCompute;
+    MenuButton mBtnCompute, mBtnBack;
     Spinner spnSex, spnHair, spnHobby, spnFeature, spnAuto;
 
     ArrayAdapter<String> mAdapterSex, mAdapterHobby, mAdapterHair, mAdapterFeature, mAdapterAuto;
@@ -64,13 +66,22 @@ public class WarrantActivity extends AppCompatActivity implements View.OnClickLi
         txtResults = (TypewriterView) findViewById(R.id.txtResults);
 
         spnSex = (Spinner) findViewById(R.id.spnSex);
+        //TODO set selected to sex of current thief
         spnHair = (Spinner) findViewById(R.id.spnHair);
         spnHobby = (Spinner) findViewById(R.id.spnHobby);
         spnFeature = (Spinner) findViewById(R.id.spnFeature);
         spnAuto = (Spinner) findViewById(R.id.spnAuto);
 
-        mBtnCompute = (Button) findViewById(R.id.btnCompute);
+        spnHair.setOnTouchListener(this);
+        spnHobby.setOnTouchListener(this);
+        spnFeature.setOnTouchListener(this);
+        spnAuto.setOnTouchListener(this);
+
+        mBtnCompute = (MenuButton) findViewById(R.id.btnCompute);
+        mBtnBack = (MenuButton) findViewById(R.id.btnBack);
+
         mBtnCompute.setOnClickListener(this);
+        mBtnBack.setOnClickListener(this);
 
         Typeface typeface = CustomFonts.getInstance(this).getBasicFont();
         lblCrimeComputer.setTypeface(typeface);
@@ -80,6 +91,8 @@ public class WarrantActivity extends AppCompatActivity implements View.OnClickLi
         lblAuto.setTypeface(typeface);
         lblSex.setTypeface(typeface);
         txtResults.setTypeface(typeface);
+
+
         mBtnCompute.setTypeface(typeface);
 
         setAdapters();
@@ -108,6 +121,9 @@ public class WarrantActivity extends AppCompatActivity implements View.OnClickLi
                 //TODO search and display results in txt
                 searchAndDisplayWarrant();
                 break;
+            case R.id.btnBack:
+                finish();
+                break;
             default:
                 break;
         }
@@ -133,6 +149,9 @@ public class WarrantActivity extends AppCompatActivity implements View.OnClickLi
             txtResults.pause(1500)
                     .type("You now have a warrant for the arrest of: \n\n")
                     .type(mSearchResults.get(0).getName());
+            //TODO if there is only one search result, store to Mission table
+            ThiefDatabaseHelper.getInstance(this).setWarrantOnCurrentMission(mSearchResults.get(0));
+
         } else if(mSearchResults.size() > 1){
             txtResults.pause(1500)
                     .type(mSearchResults.size() + " possible suspects:\n");
@@ -145,8 +164,16 @@ public class WarrantActivity extends AppCompatActivity implements View.OnClickLi
                     .type("There is no one that matches that description.");
         }
 
-        //TODO if there is only one search result, create a SharedPreference to store the name as a Warrant
+    }
 
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        if (motionEvent.getAction() == MotionEvent.ACTION_UP ) {
+            Spinner spinner = (Spinner) view;
+            spinner.setSelection((spinner.getSelectedItemPosition() + 1) % spinner.getCount(), true);
+
+        }
+        return true;
     }
 }
 

@@ -36,4 +36,5 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.android.support:cardview-v7:24.2.0'
     compile 'com.yelp.clientlib:yelp-android:2.0.0'
+    compile 'com.squareup.picasso:picasso:2.5.2'
 }

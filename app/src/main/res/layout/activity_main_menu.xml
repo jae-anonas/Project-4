@@ -23,7 +23,7 @@
             android:layout_gravity="bottom"
             android:layout_marginBottom="50dp"
             >
-            <TextView
+            <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
                 android:id="@+id/btnExit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -32,7 +32,17 @@
                 android:textColor="@color/colorText"
                 android:textSize="20sp"
                 android:text="QUIT"/>
-            <TextView
+            <!--<TextView-->
+                <!--android:id="@+id/btnOptions"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_above="@id/btnExit"-->
+                <!--android:layout_marginBottom="15dp"-->
+                <!--android:layout_centerHorizontal="true"-->
+                <!--android:textColor="@color/colorText"-->
+                <!--android:textSize="20sp"-->
+                <!--android:text="OPTIONS"/>-->
+            <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
                 android:id="@+id/btnOptions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -43,7 +53,7 @@
                 android:textSize="20sp"
                 android:text="OPTIONS"/>
 
-            <TextView
+            <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
                 android:id="@+id/btnNewGame"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -53,7 +63,7 @@
                 android:textColor="@color/colorText"
                 android:textSize="20sp"
                 android:text="NEW GAME"/>
-            <TextView
+            <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
                 android:id="@+id/btnContinue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

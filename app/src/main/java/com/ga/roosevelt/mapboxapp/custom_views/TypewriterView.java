@@ -18,6 +18,17 @@ import java.util.Queue;
  */
 public class TypewriterView extends EditText {
 
+    public interface OnTypingListener {
+        void onStopTyping();
+        void onStartTyping();
+    }
+
+    private OnTypingListener onTypingListener;
+
+    public void setOnStopRunningListener(OnTypingListener obj){
+        onTypingListener = obj;
+    }
+
     private boolean isRunning = false;
     private long mTypeSpeed = 80;
     private long mDeleteSpeed = 50;
@@ -88,10 +99,18 @@ public class TypewriterView extends EditText {
 
     private void runNext() {
         isRunning = true;
+        if (onTypingListener != null) {
+            onTypingListener.onStartTyping();
+        }
+
         Repeater next = mRunnableQueue.poll();
 
         if (next == null) {
+
             isRunning = false;
+            if (onTypingListener != null) {
+                onTypingListener.onStopTyping();
+            }
             return;
         }
 

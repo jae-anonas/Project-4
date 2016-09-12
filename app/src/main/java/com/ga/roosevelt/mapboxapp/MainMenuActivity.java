@@ -1,5 +1,6 @@
 package com.ga.roosevelt.mapboxapp;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
@@ -15,12 +16,15 @@ import android.widget.TextView;
 
 import com.ga.roosevelt.mapboxapp.constants.CustomFonts;
 import com.ga.roosevelt.mapboxapp.custom_views.MenuButton;
+import com.ga.roosevelt.mapboxapp.database.ThiefDatabaseHelper;
 
 import java.util.Locale;
 
-public class MainMenuActivity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
+public class MainMenuActivity extends AppCompatActivity implements View.OnClickListener {
+    long duration = 86400000L;
     private static final String TAG = "iiiiiiiiiiiiii";
     TextView btnNew, btnContinue, btnOptions, btnQuit;
+    ThiefDatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,28 +35,25 @@ public class MainMenuActivity extends AppCompatActivity implements View.OnClickL
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main_menu);
         bindViews();
+
+        dbHelper = ThiefDatabaseHelper.getInstance(this);
+
+        if (!dbHelper.hasThiefRecords()) {
+            ThiefDatabaseHelper.getInstance(this).addAllThiefRecords();
+        }
     }
 
     private void bindViews(){
-        btnNew = (TextView) findViewById(R.id.btnNewGame);
-        btnContinue = (TextView) findViewById(R.id.btnContinue);
-        btnOptions = (TextView) findViewById(R.id.btnOptions);
-        btnQuit = (TextView) findViewById(R.id.btnExit);
-
-        Typeface typeface = CustomFonts.getInstance(this).getBasicFont();
-
-        btnNew.setTypeface(typeface);
-        btnContinue.setTypeface(typeface);
-        btnOptions.setTypeface(typeface);
-        btnQuit.setTypeface(typeface);
+        btnNew = (MenuButton) findViewById(R.id.btnNewGame);
+        btnContinue = (MenuButton) findViewById(R.id.btnContinue);
+        btnOptions = (MenuButton) findViewById(R.id.btnOptions);
+        btnQuit = (MenuButton) findViewById(R.id.btnExit);
 
         btnContinue.setOnClickListener(this);
         btnNew.setOnClickListener(this);
+        btnOptions.setOnClickListener(this);
         btnQuit.setOnClickListener(this);
 
-        btnContinue.setOnTouchListener(this);
-        btnNew.setOnTouchListener(this);
-        btnQuit.setOnTouchListener(this);
     }
 
     @Override
@@ -60,43 +61,71 @@ public class MainMenuActivity extends AppCompatActivity implements View.OnClickL
         int id = view.getId();
         switch(id){
             case R.id.btnContinue:
-                Intent currentGame = new Intent(this, MainActivity.class);
-                startActivity(currentGame);
+                //TODO check for current game in Mission table
+                if (dbHelper.hasCurrentGame()) {
+                    Intent currentGame = new Intent(this, MainActivity.class);
+                    currentGame.putExtra("mission_id", dbHelper.getCurrentMissionId());
+                    startActivity(currentGame);
+                }
                 break;
             case R.id.btnNewGame:
-                Intent newGame = new Intent(this, MissionStartActivity.class);
-                startActivity(newGame);
+                //TODO ask first if user wants to cancel current game before starting a new one OPEN dialog
+                if (dbHelper.hasCurrentGame()) {
+                    //open dialog
+                    openNewGameDialog().show();
+                } else {
+                    //Create new game!
+                    long mission_id = dbHelper.createNewGame(duration);
+
+                    Intent newGame = new Intent(MainMenuActivity.this, MissionStartActivity.class);
+                    newGame.putExtra("mission_id", mission_id);
+                    startActivity(newGame);
+
+
+                }
                 break;
             case R.id.btnOptions:
                 //TODO new activity for options
                 break;
 
             default:
-                //TODO Exit dialog
+                //TODO Exit dialog (maybe add a closing dialog or something to indicate exit)
                 finish();
 
         }
     }
 
+    private Dialog openNewGameDialog(){
+        final Dialog dialog = new Dialog(this);
 
-    @Override
-    public boolean onTouch(View view, MotionEvent motionEvent) {
-        //change colors
-        Log.d(TAG, "onTouch: inside");
-        switch(motionEvent.getAction()){
-            case MotionEvent.ACTION_DOWN:
-                Log.d(TAG, "onTouch: pressed");
-                view.setBackgroundColor(getResources().getColor(R.color.colorText));
-                ((TextView) view).setTextColor(getResources().getColor(R.color.colorBackground));
-                break;
-            case MotionEvent.ACTION_UP:
-                Log.d(TAG, "onTouch: released");
-                view.setBackgroundColor(getResources().getColor(R.color.colorBackground));
-                ((TextView) view).setTextColor(getResources().getColor(R.color.colorText));
-                break;
-            default:
-                break;
-        }
-        return false;
+        dialog.setContentView(R.layout.dialog_new_mission);
+
+        MenuButton btnYes = (MenuButton) dialog.findViewById(R.id.btnYes);
+        MenuButton btnNo = (MenuButton) dialog.findViewById(R.id.btnNo);
+
+        btnYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: clicked yes");
+                dialog.dismiss();
+                //TODO if user proceeds, create new record in Mission, set all mission records that are "current" to "not current" (there should only be one)
+                long mission_id = dbHelper.createNewGame(duration);
+                Intent newGame = new Intent(MainMenuActivity.this, MissionStartActivity.class);
+                newGame.putExtra("mission_id", mission_id);
+                startActivity(newGame);
+            }
+        });
+
+        btnNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                Log.d(TAG, "onClick: clicked no");
+            }
+        });
+
+        Log.d(TAG, "openNewGameDialog: open dialog");
+        return dialog;
     }
+
 }

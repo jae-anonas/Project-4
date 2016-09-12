@@ -9,16 +9,37 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    android:weightSum="4"
+    android:weightSum="9"
     android:background="@color/colorText"
     tools:context="com.ga.roosevelt.mapboxapp.MainActivity">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
         mapbox:cardCornerRadius="10dp"
-        android:layout_marginBottom="@dimen/activity_horizontal_margin">
+        android:layout_weight="1"
+        mapbox:cardBackgroundColor="@color/colorBackground">
+        <TextView
+            android:id="@+id/lblPlaceName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorBackground"
+            android:textColor="@color/colorText"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:textSize="20sp"
+            android:padding="10dp"
+            android:text="CRIME COMPUTER"/>
+    </android.support.v7.widget.CardView>
+
+
+    <!--2nd screen/card -->
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="6"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        mapbox:cardCornerRadius="10dp">
 
         <TextView
             android:id="@+id/lblNeighborhoodName"
@@ -30,6 +51,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <com.mapbox.mapboxsdk.maps.MapView
                 android:id="@+id/mapBox"
                 android:layout_width="match_parent"
@@ -37,24 +59,44 @@
                 mapbox:center_latitude="40.752935"
                 mapbox:center_longitude="-63.981422"
                 mapbox:style_url="@string/style_dark"
-                mapbox:tilt="90"
+                mapbox:my_location_enabled="true"
+                mapbox:tilt="50"
                 mapbox:zoom="8"
                 mapbox:compass_enabled="false"
                 mapbox:rotate_enabled="false"
                 mapbox:tilt_enabled="false"
 
                 />
-            <TextView
-                android:id="@+id/lblPlaceName"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
+                android:orientation="vertical"
                 android:background="@color/colorBackground"
-                android:textColor="@color/colorText"
-                android:gravity="center"
-                android:layout_gravity="bottom|center_horizontal"
-                android:textSize="20sp"
-                android:padding="10dp"
-                android:text="Possible Places"/>
+                android:gravity="center">
+
+                <com.ga.roosevelt.mapboxapp.custom_views.CustomTextview
+                    android:id="@+id/txtNearestPlace"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Nearest Place "/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="vertical"
+                android:background="@color/colorBackground"
+                android:layout_gravity="bottom"
+                android:gravity="center">
+
+                <com.ga.roosevelt.mapboxapp.custom_views.CustomTextview
+                    android:id="@+id/txtDistanceToNearest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Distance to nearest: "/>
+
+            </LinearLayout>
 
         </FrameLayout>
 
@@ -64,94 +106,76 @@
     <android.support.v7.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="2"
         mapbox:cardCornerRadius="10dp"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         mapbox:cardBackgroundColor="@color/colorBackground">
-        <TextView
+
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Neighborhoods"
-            android:textSize="20sp"
-            android:textColor="@color/colorText"
-            android:gravity="center"
-            android:layout_margin="5dp"
-            android:id="@+id/lblNeighborhoods" />
-        <ListView
-            android:id="@+id/lstNeighborhoods"
-            android:layout_marginTop="35dp"
+            android:layout_height="match_parent">
+            <!--Hide this frame layout-->
+            <FrameLayout
+                android:id="@+id/frmLayoutNeighborhoods"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="invisible">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Neighborhoods"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorText"
+                    android:gravity="center"
+                    android:layout_margin="5dp"
+                    android:id="@+id/lblNeighborhoods" />
+                <ListView
+                    android:id="@+id/lstNeighborhoods"
+                    android:layout_marginTop="35dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="190dp"/>
+
+            </FrameLayout>
+
+
+
+        <FrameLayout
+            android:id="@+id/frmLayoutOptions"
             android:layout_width="match_parent"
-            android:layout_height="190dp"/>
+            android:layout_height="match_parent"
+            android:padding="@dimen/activity_horizontal_margin">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
+                    android:id="@+id/btnInvestigate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:textColor="@color/colorText"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:visibility="invisible"
+                    android:text="INVESTIGATE"/>
+
+                <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
+                    android:id="@+id/btnWarrant"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:textColor="@color/colorText"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:text="VISIT INTERPOL"/>
+
+            </LinearLayout>
+
+            </FrameLayout>
+        </FrameLayout>
     </android.support.v7.widget.CardView>
 
 
 </LinearLayout>
-
-<!--
-
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
-    tools:context="com.ga.roosevelt.mapboxapp.MainActivity">
-
-
-
-    <com.mapbox.mapboxsdk.maps.MapView
-        android:id="@+id/mapBox"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        mapbox:center_latitude="40.752935"
-        mapbox:center_longitude="-63.981422"
-        mapbox:style_url="@string/style_dark"
-        mapbox:tilt="90"
-        mapbox:zoom="8"
-        mapbox:compass_enabled="false"/>
-
-    <android.support.v7.widget.CardView
-        android:layout_centerHorizontal="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="9dp"
-        mapbox:cardBackgroundColor="@color/cardview_dark_background"
-        android:padding="15dp">
-        <TextView
-            android:id="@+id/lblNeighborhoodName"
-            android:layout_gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textColor="#DC143C"/>
-
-    </android.support.v7.widget.CardView>
-
-
-    <android.support.v7.widget.CardView
-        android:layout_width="wrap_content"
-        android:layout_height="220dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="9dp"
-        mapbox:cardBackgroundColor="@color/cardview_dark_background">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Neighborhoods"
-            android:textSize="20sp"
-            android:textColor="@android:color/white"
-            android:gravity="center"
-            android:layout_margin="5dp"
-            android:id="@+id/lblNeighborhoods" />
-        <ListView
-            android:id="@+id/lstNeighborhoods"
-            android:layout_marginTop="35dp"
-            android:layout_width="match_parent"
-            android:layout_height="190dp"/>
-    </android.support.v7.widget.CardView>
-
-
-</RelativeLayout>
-
-
--->

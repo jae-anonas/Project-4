@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    android:weightSum="9"
+    android:background="@color/colorText"
+    tools:context="com.ga.roosevelt.mapboxapp.MainActivity">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        mapbox:cardCornerRadius="10dp"
+        android:layout_weight="1"
+        mapbox:cardBackgroundColor="@color/colorBackground">
+        <com.ga.roosevelt.mapboxapp.custom_views.CustomTextview
+            android:id="@+id/lblPlaceName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorBackground"
+            android:textColor="@color/colorText"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:textSize="20sp"
+            android:padding="10dp"
+            android:text="CRIME COMPUTER"/>
+    </android.support.v7.widget.CardView>
+
+
+    <!--2nd screen/card -->
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="6"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        mapbox:cardBackgroundColor="@color/colorBackground"
+        mapbox:cardCornerRadius="10dp">
+
+        <ImageView
+            android:id="@+id/imgView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        mapbox:cardCornerRadius="10dp"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        mapbox:cardBackgroundColor="@color/colorBackground">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </FrameLayout>
+    </android.support.v7.widget.CardView>
+
+
+</LinearLayout>

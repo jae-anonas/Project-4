@@ -32,7 +32,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MissionStartActivity"></activity>
+        <activity android:name=".MissionStartActivity" />
+        <activity android:name=".InvestigateActivity"></activity>
     </application>
 
 </manifest>
