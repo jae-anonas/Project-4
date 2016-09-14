@@ -30,4 +30,9 @@ public class CustomFonts {
                 String.format(Locale.US, "fonts/%s", "PressStart2P.ttf"));
     }
 
+    public Typeface getLogoFont(){
+        return Typeface.createFromAsset(mAssetManager,
+                String.format(Locale.US, "fonts/%s", "vermin_vibes_1989.ttf"));
+    }
+
 }

@@ -36,6 +36,21 @@ public class ThiefDatabaseHelper extends SQLiteOpenHelper {
     public static final String THIEF_TABLE_NAME = "thief_table";
     public static final String PLACE_TABLE_NAME = "place_table";
     public static final String MISSION_TABLE_NAME = "mission_table";
+    public static final String CLUES_PLACE_TABLE_NAME = "clues_place_table";
+
+    //table for mission clues to place
+    public static final String COL_CLUES_PLACE_ID = "_id";
+    public static final String COL_CLUES_PLACE_MISSION_ID = "mission_id";
+    public static final String COL_CLUES_PLACE_PLACE_ID = "place_id";
+    public static final String COL_CLUES_PLACE_CLUE_ID = "clue_id";
+
+    public static final String CREATE_TABLE_CLUES_PLACE =
+            "CREATE TABLE " + CLUES_PLACE_TABLE_NAME +
+                    "(" +
+                    COL_CLUES_PLACE_ID + " INTEGER PRIMARY KEY, " +
+                    COL_CLUES_PLACE_MISSION_ID + " INTEGER, " +
+                    COL_CLUES_PLACE_PLACE_ID + " TEXT, " +
+                    COL_CLUES_PLACE_CLUE_ID + " TEXT )";
 
     //table for thief
     public static final String COL_ID = "_id";
@@ -140,6 +155,7 @@ public class ThiefDatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_THIEF_TABLE);
         sqLiteDatabase.execSQL(CREATE_TABLE_VISITED_PLACES);
         sqLiteDatabase.execSQL(CREATE_TABLE_MISSION);
+        sqLiteDatabase.execSQL(CREATE_TABLE_CLUES_PLACE);
 
         //TODO fill thief database
 //        addAllThiefRecords();
@@ -150,6 +166,7 @@ public class ThiefDatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + THIEF_TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + PLACE_TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MISSION_TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + CLUES_PLACE_TABLE_NAME);
         this.onCreate(sqLiteDatabase);
     }
 
@@ -412,6 +429,7 @@ public class ThiefDatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_MISSION_END_TIME, endTime);
         values.put(COL_MISSION_CURRENT, 1); //set this to CURRENT MISSION
         values.put(COL_MISSION_ACTUAL_THIEF, thief.getId());
+        values.put(COL_MISSION_GIVEN_THIEF_CLUES, " ");
 
         Log.d(TAG, "createNewGame: " + String.format(Locale.US, "start: %s; end: %s; thief: %s", currentTime, endTime, thief.getName()));
 
@@ -510,12 +528,16 @@ public class ThiefDatabaseHelper extends SQLiteOpenHelper {
     public List<MissionBusiness> getPlacesInCurrentMissionAsList(){
         List<MissionBusiness> businesses = new ArrayList<>();
 
-        String[] places = getPlacesInCurrentMission().split(" ");
+        if(getPlacesInCurrentMission() != null){
 
-        for (String place : places) {
-            MissionBusiness business = getPlaceById(place);
-            businesses.add(business);
+            String[] places = getPlacesInCurrentMission().split(" ");
+
+            for (String place : places) {
+                MissionBusiness business = getPlaceById(place);
+                businesses.add(business);
+            }
         }
+
 
         return businesses;
     }
@@ -547,6 +569,42 @@ public class ThiefDatabaseHelper extends SQLiteOpenHelper {
                 null);
 
         return cursor.moveToFirst();
+    }
+
+    //call in Yelp api call, "randomize" clue to each place
+    public void addClueToPlace(long mission_id, String clue_id, String place_id){
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COL_CLUES_PLACE_MISSION_ID, mission_id);
+        values.put(COL_CLUES_PLACE_PLACE_ID, place_id);
+        values.put(COL_CLUES_PLACE_CLUE_ID, clue_id);
+
+        db.insertOrThrow(CLUES_PLACE_TABLE_NAME, null, values);
+
+        db.close();
+    }
+
+    public String getAssignedClueToPlace(long mission_id, String place_id){
+        SQLiteDatabase db = getReadableDatabase();
+        String clue = "";
+
+        Cursor cursor = db.query(CLUES_PLACE_TABLE_NAME,
+                null,
+                COL_CLUES_PLACE_MISSION_ID + "=? AND " + COL_CLUES_PLACE_PLACE_ID + "=?",
+                new String[]{String.valueOf(mission_id), place_id},
+                null,
+                null,
+                null);
+
+        Log.d(TAG, "getAssignedClueToPlace: iiiiiiiii cursor count: " + cursor.getCount());
+
+        if (cursor.moveToFirst()) {
+            clue = cursor.getString(cursor.getColumnIndex(COL_CLUES_PLACE_CLUE_ID));
+            Log.d(TAG, "getAssignedClueToPlace: iiiiiiiii" + clue);
+        }
+
+        return clue;
     }
 
     //call whenever doing Yelp API calls
@@ -635,7 +693,6 @@ public class ThiefDatabaseHelper extends SQLiteOpenHelper {
 
             currentMission.setThief(getThiefById(thief_id));
         }
-
 
         return currentMission;
     }

@@ -13,7 +13,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:parentActivityName=".MainMenuActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,14 +27,23 @@
 
         <activity android:name=".WarrantActivity" />
         <activity android:name=".MainMenuActivity">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
+        <activity android:name=".MissionStartActivity" />
+        <activity android:name=".InvestigateActivity"></activity>
+        <activity
+            android:name=".SplashActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MissionStartActivity" />
-        <activity android:name=".InvestigateActivity"></activity>
     </application>
 
 </manifest>

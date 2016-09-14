@@ -138,7 +138,7 @@ public class MissionStartActivity extends AppCompatActivity implements View.OnCl
                     //TODO add these places to current mission
                     places += place.id() + " ";
                 }
-                Log.d(TAG, "onResponse: places.trim()" + places.trim());
+                Log.d(TAG, "onResponse: added places: " + places.trim());
                 dbHelper.addPlacesInCurrentMission(places.trim());
 
                 Business firstBusiness =  searchResponse.businesses().get(0);
@@ -146,14 +146,13 @@ public class MissionStartActivity extends AppCompatActivity implements View.OnCl
                 Business thirdBusiness = searchResponse.businesses().get(2);
                 Business fourthBusiness = searchResponse.businesses().get(3);
 
-                //TODO Store these businesses! Check first if they're already stored. (i.e. by place id)
-                //TODO WHY CHECK??
+                dbHelper.addClueToPlace(mission_id, "hair", firstBusiness.id());
+                dbHelper.addClueToPlace(mission_id, "hobby", secondBusiness.id());
+                dbHelper.addClueToPlace(mission_id, "feature", thirdBusiness.id());
+                dbHelper.addClueToPlace(mission_id, "auto", fourthBusiness.id());
 
                 Log.d(TAG, "onResponse: distance, 1st business: " + firstBusiness.distance());
                 Log.d(TAG, "onResponse: name: " + firstBusiness.name());
-
-//                LatLng target1 = new LatLng(firstBusiness.location().coordinate().latitude(),
-//                        firstBusiness.location().coordinate().longitude());
 
                 printLineHeading(businesses.get(0).name(), "mask of Montezuma");
                 //TODO randomize treasure stolen

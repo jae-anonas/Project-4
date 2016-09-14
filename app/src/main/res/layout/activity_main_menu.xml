@@ -17,65 +17,72 @@
         android:layout_height="match_parent"
         app:cardCornerRadius="10dp"
         app:cardBackgroundColor="@color/colorBackground">
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="50dp"
-            >
-            <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
-                android:id="@+id/btnExit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:textColor="@color/colorText"
-                android:textSize="20sp"
-                android:text="QUIT"/>
-            <!--<TextView-->
-                <!--android:id="@+id/btnOptions"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_above="@id/btnExit"-->
-                <!--android:layout_marginBottom="15dp"-->
-                <!--android:layout_centerHorizontal="true"-->
-                <!--android:textColor="@color/colorText"-->
-                <!--android:textSize="20sp"-->
-                <!--android:text="OPTIONS"/>-->
-            <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
-                android:id="@+id/btnOptions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@id/btnExit"
-                android:layout_marginBottom="15dp"
-                android:layout_centerHorizontal="true"
-                android:textColor="@color/colorText"
-                android:textSize="20sp"
-                android:text="OPTIONS"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="4">
+            <com.ga.roosevelt.mapboxapp.custom_views.LogoTextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:text="Carmen GO"
+                android:layout_weight="3"
+                android:textColor="#33FFCC"/>
 
-            <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
-                android:id="@+id/btnNewGame"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@id/btnOptions"
-                android:layout_marginBottom="15dp"
-                android:layout_centerHorizontal="true"
-                android:textColor="@color/colorText"
-                android:textSize="20sp"
-                android:text="NEW GAME"/>
-            <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
-                android:id="@+id/btnContinue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@id/btnNewGame"
-                android:layout_marginBottom="15dp"
-                android:layout_centerHorizontal="true"
-                android:textColor="@color/colorText"
-                android:textSize="20sp"
-                android:text="CONTINUE"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="bottom"
+                android:orientation="vertical"
+                android:layout_marginBottom="50dp"
+                android:layout_weight="1"
+                android:weightSum="4"
+                >
+                <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
+                    android:id="@+id/btnContinue"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:textColor="@color/colorText"
+                    android:textSize="20sp"
+                    android:text="CONTINUE"
+                    android:layout_weight="1"
+                    android:padding="@dimen/activity_horizontal_margin"
+                    android:visibility="invisible"/>
+
+                <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
+                    android:id="@+id/btnNewGame"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:textColor="@color/colorText"
+                    android:textSize="20sp"
+                    android:text="NEW GAME"
+                    android:padding="@dimen/activity_horizontal_margin"
+                    android:layout_weight="1"/>
+                <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
+                    android:id="@+id/btnOptions"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:textColor="@color/colorText"
+                    android:textSize="20sp"
+                    android:text="OPTIONS"
+                    android:padding="@dimen/activity_horizontal_margin"
+                    android:layout_weight="1"/>
+                <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
+                    android:id="@+id/btnExit"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:textColor="@color/colorText"
+                    android:textSize="20sp"
+                    android:text="QUIT"
+                    android:padding="@dimen/activity_horizontal_margin"
+                    android:layout_weight="1"/>
 
 
-        </RelativeLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </android.support.v7.widget.CardView>
 

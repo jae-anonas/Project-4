@@ -44,8 +44,14 @@
 
         <ImageView
             android:id="@+id/imgView"
+            android:layout_width="150dp"
+            android:layout_height="150dp" />
+
+        <com.ga.roosevelt.mapboxapp.custom_views.CustomTextview
+            android:id="@+id/txtReview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="100dp"
+            android:layout_gravity="bottom"/>
 
     </android.support.v7.widget.CardView>
 
@@ -57,11 +63,32 @@
         android:layout_marginTop="@dimen/activity_vertical_margin"
         mapbox:cardBackgroundColor="@color/colorBackground">
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="3">
+            <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
+                android:id="@+id/btnOwner"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="Office"/>
+            <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
+                android:id="@+id/btnCustomer"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="Tables"
+                />
+            <com.ga.roosevelt.mapboxapp.custom_views.MenuButton
+                android:id="@+id/btnCook"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="Kitchen"/>
 
-        </FrameLayout>
+        </LinearLayout>
     </android.support.v7.widget.CardView>
 
 

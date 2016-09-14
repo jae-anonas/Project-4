@@ -60,6 +60,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,18 +72,20 @@ import retrofit2.Callback;
 
 public class MainActivity extends AppCompatActivity implements NeighborhoodListBaseAdapter.OnNeighborhoodChosenListener, View.OnClickListener {
 
+    private static double RADIUS = 1000.0;
     private static final String TAG = "iiiiiii";
     private static final int LOCATION_PERMISSION_CODE = 123;
+    private boolean zoomedIn = false;
 
     private BroadcastReceiver mBroadcastReceiver;
 
     MapView mMap;
-    TextView mLblNeighborhoodName, mLblNeighborhood, mLblPlaceName;
-    MenuButton mBtnWarrant, mBtnInvestigate; //TODO mBtnInvestigate will be clickable if near!!
+    TextView mLblNeighborhoodName, mLblNeighborhood;
+    MenuButton mBtnWarrant, mBtnInvestigate;
     ListView mLstNeighborhoods;
     PolygonOptions currentNeighborhoodPolygon;
     MapboxMap mMapboxMap;
-    CustomTextview mDistanceToNearest, mNearestPlace;
+    CustomTextview mDistanceToNearest, mNearestPlace, mLblPlaceName;
 
     MarkerViewOptions currentPosMarker, resultMarker1, resultMarker2, resultMarker3;
 
@@ -128,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
                         .target(new LatLng(40.752835, -73.981422))  // Sets the center of the map to the NYPL at 42nd, Bryant Park
                         .bearing(30)                                // 270 - Sets the orientation of the camera to look west
                         .tilt(30)                                   // Sets the tilt of the camera to 30 degrees
-                        .zoom(5)
+                        .zoom(11)
                         .build();
 
                 mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 4000);
@@ -183,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
         mLblNeighborhoodName = (TextView) findViewById(R.id.lblNeighborhoodName);
         mLstNeighborhoods = (ListView) findViewById(R.id.lstNeighborhoods);
         mLblNeighborhood = (TextView) findViewById(R.id.lblNeighborhoods);
-        mLblPlaceName = (TextView) findViewById(R.id.lblPlaceName);
+//        mLblPlaceName = (CustomTextview) findViewById(R.id.lblPlaceName);
 
         mBtnWarrant = (MenuButton) findViewById(R.id.btnWarrant);
         mBtnInvestigate = (MenuButton) findViewById(R.id.btnInvestigate);
@@ -199,13 +202,8 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
             }
         });
 
-        Typeface typeface = CustomFonts.getInstance(this).getBasicFont();
-        mLblPlaceName.setTypeface(typeface);
-        mLblNeighborhood.setTypeface(typeface);
-
         mMap = (MapView) findViewById(R.id.mapBox);
 
-        mLblPlaceName.setOnClickListener(this);
         mBtnWarrant.setOnClickListener(this);
         mBtnInvestigate.setOnClickListener(this);
     }
@@ -225,6 +223,20 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
                     myLoc.setLatitude(lat);
                     myLoc.setLongitude(lng);
                     LatLng myLatLng = new LatLng(lat, lng);
+
+                    if (mMapboxMap != null && !zoomedIn) {
+                        //move camera
+                        CameraPosition cameraPosition = new CameraPosition.Builder()
+                                .target(myLatLng)  // Sets the center of the map to the NYPL at 42nd, Bryant Park
+                                .bearing(30)                                // 270 - Sets the orientation of the camera to look west
+                                .tilt(30)                                   // Sets the tilt of the camera to 30 degrees
+                                .zoom(11)
+                                .build();
+
+                        mMapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 4000);
+
+                        zoomedIn = true;
+                    }
 
                     Log.d(TAG, "onReceive: lat: " + myLoc.getLatitude() + " lng: " + myLoc.getLongitude());
 
@@ -276,11 +288,10 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
                     }
 
                     //display in textview
-                    mDistanceToNearest.setText("Distance to nearest: " + nearestDistance);
-
-                    //TODO if nearestDistance is < 50 then activate Investigate feature
-                    if (nearestDistance <= 50.0) {
-                        Toast.makeText(MainActivity.this, "CLOSE ENOUGH!" + nearestOne.getName(), Toast.LENGTH_SHORT).show();
+                    mDistanceToNearest.setText("Distance: " + String.valueOf(new DecimalFormat("#.##").format(nearestDistance)) + "m");
+                    //TODO if nearestDistance is < RADIUS then activate Investigate feature
+                    if (nearestDistance <= RADIUS) {
+//                        Toast.makeText(MainActivity.this, "CLOSE ENOUGH!" + nearestOne.getName(), Toast.LENGTH_SHORT).show();
                         //TODO open Investigation activity or activate button
                         mNearestPlace.setText(nearestOne.getName());
                         mBtnInvestigate.setVisibility(View.VISIBLE);
@@ -463,15 +474,15 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
                 mMapboxMap.addMarker(resultMarker2);
                 mMapboxMap.addMarker(resultMarker3);
 
-                mMapboxMap.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(@NonNull Marker marker) {
-
-                        mLblPlaceName.setText(marker.getTitle());
-                        Toast.makeText(MainActivity.this, marker.getSnippet(), Toast.LENGTH_SHORT).show();
-                        return false;
-                    }
-                });
+//                mMapboxMap.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
+//                    @Override
+//                    public boolean onMarkerClick(@NonNull Marker marker) {
+//
+//                        mLblPlaceName.setText(marker.getTitle());
+//                        Toast.makeText(MainActivity.this, marker.getSnippet(), Toast.LENGTH_SHORT).show();
+//                        return false;
+//                    }
+//                });
 
                 //TODO zoom out to show all in MapBox screen
 
@@ -499,6 +510,8 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
                 break;
             case R.id.btnWarrant:
                 Intent i = new Intent(MainActivity.this, WarrantActivity.class);
+                i.putExtra("sex", currentMission.getThief().getGender());
+                i.putExtra("mission_id", mission_id);
                 startActivity(i);
                 break;
             case R.id.btnInvestigate:
@@ -511,5 +524,13 @@ public class MainActivity extends AppCompatActivity implements NeighborhoodListB
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent(this, MainMenuActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(i);
     }
 }

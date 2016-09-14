@@ -20,6 +20,7 @@ import com.ga.roosevelt.mapboxapp.constants.CustomFonts;
 import com.ga.roosevelt.mapboxapp.custom_views.MenuButton;
 import com.ga.roosevelt.mapboxapp.custom_views.TypewriterView;
 import com.ga.roosevelt.mapboxapp.database.ThiefDatabaseHelper;
+import com.ga.roosevelt.mapboxapp.game_logic.Mission;
 import com.ga.roosevelt.mapboxapp.models.Thief;
 
 import java.util.ArrayList;
@@ -40,8 +41,14 @@ public class WarrantActivity extends AppCompatActivity implements View.OnClickLi
     String[] mHair = {"", "black","blond","brown","red"};
     String[] mFeature = {"", "scar", "jewelry", "wig", "tattoo"};
     String[] mAuto = {"", "motorcycle", "convertible", "limousine", "skateboard"};
+    String thiefGender;
 
     List<Thief> mSearchResults;
+
+    ThiefDatabaseHelper dbHelper;
+
+    long mission_id;
+    Mission currentMission;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +58,14 @@ public class WarrantActivity extends AppCompatActivity implements View.OnClickLi
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_warrant);
+        //get thief gender to display in warrant
+        thiefGender = getIntent().getStringExtra("sex");
+        mission_id = getIntent().getLongExtra("mission_id", 0);
+
+        dbHelper = ThiefDatabaseHelper.getInstance(this);
+        currentMission = dbHelper.getMissionById(mission_id);
+
+
         bindViews();
 
     }
@@ -106,10 +121,43 @@ public class WarrantActivity extends AppCompatActivity implements View.OnClickLi
         mAdapterAuto = new DossierSpinnerAdapter(this, android.R.layout.simple_list_item_1, mAuto);
 
         spnSex.setAdapter(mAdapterSex);
+        if (thiefGender.equalsIgnoreCase("female")){
+            spnSex.setSelection(1, false);
+        } else {
+            spnSex.setSelection(0, false);
+        }
+
         spnHair.setAdapter(mAdapterHair);
+        if(dbHelper.getGivenCluesInCurrentMission().contains("hair")){
+            int index = 0;
+            switch (currentMission.getThief().getHairColor()){
+                case "black":
+                    //1
+                    spnHair.setSelection(1, false);
+                    break;
+                case "blond":
+                    //2
+                    spnHair.setSelection(2, false);
+                    break;
+                case "brown":
+                    //3
+                    spnHair.setSelection(3, false);
+                    break;
+                case "red":
+                    //4
+                    spnHair.setSelection(4, false);
+                    break;
+                default:
+                    break;
+            }
+            spnHair.setSelection(index, false);
+        }
+
         spnHobby.setAdapter(mAdapterHobby);
         spnFeature.setAdapter(mAdapterFeature);
         spnAuto.setAdapter(mAdapterAuto);
+
+
 
     }
 

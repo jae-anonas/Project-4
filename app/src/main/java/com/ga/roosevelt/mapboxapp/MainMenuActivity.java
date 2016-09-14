@@ -34,9 +34,10 @@ public class MainMenuActivity extends AppCompatActivity implements View.OnClickL
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main_menu);
-        bindViews();
 
         dbHelper = ThiefDatabaseHelper.getInstance(this);
+        bindViews();
+
 
         if (!dbHelper.hasThiefRecords()) {
             ThiefDatabaseHelper.getInstance(this).addAllThiefRecords();
@@ -53,6 +54,10 @@ public class MainMenuActivity extends AppCompatActivity implements View.OnClickL
         btnNew.setOnClickListener(this);
         btnOptions.setOnClickListener(this);
         btnQuit.setOnClickListener(this);
+
+        if(dbHelper.hasCurrentGame()){
+            btnContinue.setVisibility(View.VISIBLE);
+        }
 
     }
 
